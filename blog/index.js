@@ -30,6 +30,9 @@ app.use(session({
 // flash 中间件，用来显示通知
 app.use(flash())
 
+// 路由
+routes(app)
+
 // 监听端口，启动程序
 app.listen(config.port, function () {
   console.log(`${pkg.name} listening on port ${config.port}`)
