@@ -1,16 +1,32 @@
+var sha1 = require('sha1')
 var express = require('express')
 var router = express.Router()
 
+var UserModel = require('../models/users')
 var checkNotLogin = require('../middlewares/check').checkNotLogin
 
 // GET /signin 登录页
 router.get('/', checkNotLogin, function (req, res, next) {
-  res.send(req.flash())
+  res.render('signin')
 })
 
 // POST /signin 用户登陆
 router.post('/', checkNotLogin, function (req, res, next) {
-  res.send(req.flash())
+  var name = req.fields.name
+  var password = req.fields.password
+
+  UserModel.getUserByName(name)
+    .then(function (user) {
+      if (!user) {
+        req.flash('error', '用户不存在')
+        return res.redirect('back')
+      }
+      // 检查密码是否匹配
+      if (sha1(password) !== user.password) {
+        req.flash('error', '用户名或密码错误')
+        return res.redirect('back')
+      }
+    })
 })
 
 module.exports = router
